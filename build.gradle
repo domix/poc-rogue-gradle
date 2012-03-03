@@ -1,0 +1,75 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'scala'
+apply plugin: 'project-report'
+
+/*apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'code-quality'
+*/
+//apply plugin: com.orbitz.gradle.cobertura.CoberturaPlugin
+
+springVersion = '3.0.3.RELEASE'
+scalaVersion = '2.9.0-1'
+rogueVersion = '1.1.5'
+
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
+
+version = '0.1-SNAPSHOT'
+group = 'org.domix.scala.rogue'
+description = ''
+artefact = description
+
+
+repositories {
+  mavenCentral()
+  mavenRepo url: "http://scala-tools.org/repo-releases"
+  mavenRepo url: "http://oss.sonatype.org"
+  mavenRepo url: "https://oss.sonatype.org/content/repositories/comfoursquare-243/"
+}
+
+dependencies {
+  groovy 'org.codehaus.groovy:groovy-all:1.8.5'
+  // Libraries needed to run the scala tools
+  scalaTools "org.scala-lang:scala-compiler:${scalaVersion}"
+  scalaTools "org.scala-lang:scala-library:${scalaVersion}"
+  
+  // Libraries needed for scala api
+  compile "org.scala-lang:scala-library:${scalaVersion}"
+  
+  compile('org.slf4j:slf4j-log4j12:1.5.8') {
+    exclude module: 'log4j'
+  }
+  
+  compile("log4j:log4j:1.2.15") {
+    exclude module: "jms"
+    exclude module: "mail"
+    exclude module: "jmxri"
+    exclude module: "jmxtools"
+  }
+  
+  compile "com.foursquare:rogue_${scalaVersion}:${rogueVersion}"
+
+  testCompile 'junit:junit:4.10'
+  testCompile "org.easytesting:fest-assert:1.4"
+  testCompile "org.mockito:mockito-all:1.9.0"
+  testCompile "com.novocode:junit-interface:0.6"
+  testCompile "org.scala-tools.testing:specs_${scalaVersion}:1.6.8"
+}
+
+task makeDirs(description: 'make all dirs for project setup') << {
+  def sources = [sourceSets.main, sourceSets.test]
+  sources*.allSource*.srcDirs.flatten().each { File srcDir ->
+    println "making $srcDir"
+    srcDir.mkdirs()
+  }
+}
+
+task wrap(type: Wrapper, description: "create a gradlew") {
+  gradleVersion = '1.0-milestone-5'
+}
+
+/*cobertura {
+  coverageSourceDirs << project.sourceSets.main.groovy.srcDirs
+}*/
